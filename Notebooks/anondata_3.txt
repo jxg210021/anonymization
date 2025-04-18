@@ -1,3 +1,6 @@
+
+UUID: 1ae20829-5200-4c83-91c6-7de692f6423d
+
 Patient Name: *patient name*
 Date of Birth: *date*
 Medical record number: *medical record number*
