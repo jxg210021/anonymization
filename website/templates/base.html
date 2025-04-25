@@ -77,16 +77,29 @@
     ></script>
 
 {% block javascript %}
-    <script type="text/javascript">
-      function deleteNote(noteId) {
-  fetch("/delete-note", {
-    method: "POST",
-    body: JSON.stringify({ noteId: noteId }),
-  }).then((_res) => {
-    window.location.href = "/";
+<script>
+  /* filename appears in the custom file input */
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelector('#file').addEventListener('change', function () {
+      const name = this.value.split('\\').pop();
+      this.nextElementSibling.innerText = name || 'Select file…';
+    });
   });
+
+  /* select all / none */
+  function setAll(state) {
+    document.querySelectorAll('.custom-control-input')
+            .forEach(c => c.checked = state);
   }
 </script>
+
+<!-- Optional: simple dark-mode support -->
+<style>
+  @media (prefers-color-scheme: dark) {
+    body { background:#121212; color:#e8e8e8; }
+    .card { background:#1e1e1e; }
+  }
+</style>
 {% endblock %}
   </body>
 </html>

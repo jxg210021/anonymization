@@ -1,5 +1,8 @@
-from flask import Blueprint, render_template, request, flash
+from flask import Blueprint, render_template, request, flash, redirect, url_for, send_file
+import io
+
 from website.redactor import clean_text
+
 
 views = Blueprint('views', __name__)
 
@@ -41,3 +44,22 @@ def home():
             flash("Please upload a valid .txt file.", "error")
 
     return render_template("home.html", redacted_output=redacted_output)
+@views.route("/download", methods=["POST"])
+def download():
+    """Send the redacted text back to the user as a .txt attachment."""
+    redacted_text = request.form.get("redacted_text")
+
+    if not redacted_text:                       # someone typed /download directly
+        flash("Nothing to download.", "error")
+        return redirect(url_for("views.home"))
+
+    buffer = io.BytesIO()                       # in-memory file
+    buffer.write(redacted_text.encode("utf-8"))
+    buffer.seek(0)
+
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name="redacted.txt",
+        mimetype="text/plain",
+    )
