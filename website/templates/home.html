@@ -1,23 +1,72 @@
 {% extends "base.html" %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Health Data Redaction Tool{% endblock %}
 
 {% block content %}
-  <div class="mt-5">
-    <h2>Health Data Redaction Tool</h2>
-    <form method="POST" enctype="multipart/form-data">
-      <div class="form-group">
-        <label for="file">Upload a .txt file:</label>
-        <input type="file" name="file" id="file" class="form-control-file" required>
+  <div class="text-center my-4">
+    <!-- Health Logo -->
+    <img src="https://cdn-icons-png.flaticon.com/64/2957/2957974.png" alt="Health Logo" width="60" class="mb-2">
+    <h1 class="h3">Health Data Redaction Tool</h1>
+    <!-- Description -->
+    <p class="text-muted">Upload a <code>.txt</code> file to redact personal health information and ensure patient privacy.</p>
+  </div>
+
+  <!-- GitHub Link -->
+  <div class="text-center mb-4">
+    <a href="https://github.com/jxg210021/anonymization" target="_blank" class="d-inline-flex align-items-center">
+      <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub Logo" width="32" class="mr-2">
+      <span>GitHub</span>
+    </a>
+  </div>
+
+  <!-- Redaction Form -->
+  <div class="card mx-auto" style="max-width: 600px;">
+    <div class="card-header bg-primary text-white">
+      Redact Your File
+    </div>
+    <div class="card-body">
+      <form method="POST" enctype="multipart/form-data">
+        <!-- File picker -->
+        <div class="form-group text-left">
+          <label for="file">Choose a <code>.txt</code> file</label>
+          <input type="file" name="file" id="file" class="form-control-file" required>
+        </div>
+
+        <!-- Filter Options -->
+        <div class="form-group text-left">
+          <label>Redaction Filters:</label>
+          <div class="row">
+            {% for key, label in {
+              'name':'Names','phone':'Phone','dates':'Dates','dob':'Date of Birth','email':'Email',
+              'address':'Address','ssn':'SSN','acct':'Medicaid Account','allergies':'Allergies',
+              'results':'Lab Results','beneficiary_num':'Beneficiary Number','record_num':'Record Number',
+              'certificate':'Certificate Number','license':'License Number','serial':'Serial Numbers',
+              'identifier':'Device Identifiers','url':'URLs','code':'Codes'
+            }.items() %}
+            <div class="col-6 col-md-4">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="{{ key }}" id="filter-{{ key }}" checked>
+                <label class="form-check-label" for="filter-{{ key }}">{{ label }}</label>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Redact</button>
+      </form>
+    </div>
+  </div>
+
+  {% if redacted_output %}
+    <!-- Display after redaction -->
+    <div class="card mx-auto mt-4 border-success" style="max-width: 600px;">
+      <div class="card-header bg-success text-white">
+        Redacted Output
       </div>
-      <button type="submit" class="btn btn-primary mt-2">Redact</button>
-    </form>
-    
-    {% if redacted_output %}
-      <div class="mt-4">
-        <h4>Redacted Output:</h4>
+      <div class="card-body">
         <pre style="white-space: pre-wrap;">{{ redacted_output }}</pre>
       </div>
-    {% endif %}
-  </div>
+    </div>
+  {% endif %}
 {% endblock %}
