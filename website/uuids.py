@@ -1,6 +1,7 @@
 from flask import Flask, session
 
 def init_uuids():
+    session.permanent = True
     if 'uuids' not in session:
         session['uuids'] = {}
 

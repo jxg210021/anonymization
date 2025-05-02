@@ -70,8 +70,8 @@
 
         <button id="redactBtn" type="submit" class="btn btn-primary btn-block"
         onclick="startRedaction(this);">
-  Redact
-</button>
+          Redact
+        </button>
 
       </form>
     </div>
@@ -96,8 +96,28 @@
         </button>
       </form>
       </div>
+      <div>
+        <form method="POST" action="{{ url_for('views.unredact')}}" class="max-width">
+          <textarea name="redacted_text" class="d-none">{{ redacted_output|e }}</textarea>
+          <button id="unredactBtn" type="submit" class="btn btn-primary btn-block">
+            Unredact
+          </button>
+        </form>
+      </div>
 
       </div>
     </div>
   {% endif %}
+
+  {% if unredacted_output %}
+
+  <div class="card mx-auto mt-4 border-success" style="max-width: 600px;">
+    <div class="card-header bg-success text-white">
+      Unredacted Output
+    </div>
+    <div class="card-body">
+      <pre style="white-space: pre-wrap;">{{ unredacted_output }}</pre>
+
+  {% endif %}
+
 {% endblock %}
