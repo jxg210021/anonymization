@@ -1,7 +1,8 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, send_file
+from flask import Blueprint, render_template, request, flash, redirect, url_for, send_file, session
 import io
 
-from website.redactor import clean_text
+from website.redactor import clean_text, generate_uuid
+from website.uuids import init_uuids, get_uuids, update_uuids
 
 
 views = Blueprint('views', __name__)
@@ -39,7 +40,11 @@ def home():
             }
 
             # Call w/ user’s filter choices
-            redacted_output = clean_text(raw, filters)
+            uuid = generate_uuid()
+            init_uuids()
+            update_uuids(str(uuid), uploaded.filename)
+
+            redacted_output = clean_text(raw, filters, uuid)
         else:
             flash("Please upload a valid .txt file.", "error")
 

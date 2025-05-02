@@ -1,4 +1,5 @@
 import re
+import uuid
 
 # --------------------------
 # Individual cleaning functions
@@ -165,6 +166,27 @@ def clean_results(input):
 
 
 # --------------------------
+# Reanonymization
+# --------------------------
+
+def generate_uuid():
+    _uuid = uuid.uuid4()
+    return _uuid
+
+def write_uuid(text, _uuid):
+    text = '\nUUID: ' + str(_uuid) + '\n\n' + text
+    return text
+
+def get_uuid(text):
+
+    uuid_pattern = r'UUID:\s*([a-fA-F0-9\-]{36})'
+    found = re.search(uuid_pattern, text)
+    if found:
+        return found.group(1)
+    return None
+
+
+# --------------------------
 # Redaction Filters
 # --------------------------
 
@@ -200,7 +222,7 @@ def get_filters(text):
     filters['allergy_list'] = []
     return filters
 
-def clean_text(text, filters):
+def clean_text(text, filters, _uuid):
     if filters.get('phone'):
         text = clean_phone(text)
     if filters.get('dates'):
@@ -237,6 +259,9 @@ def clean_text(text, filters):
         text = clean_url(text)
     if filters.get('code'):
         text = clean_code(text)
+
+    text = write_uuid(text, _uuid)
+
     return text
 
 # --------------------------
