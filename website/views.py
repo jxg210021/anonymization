@@ -1,8 +1,10 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, send_file, session
+from flask import Flask, Blueprint, render_template, request, flash, redirect, url_for, send_file, session
 import io
 
 from website.redactor import clean_text, generate_uuid, get_uuid
 from website.uuids import init_uuids, get_uuids, update_uuids
+from . import db
+from .models import TextFile
 
 
 views = Blueprint('views', __name__)
@@ -41,11 +43,13 @@ def home():
 
             # Call w/ user’s filter choices
             uuid = generate_uuid()
-            init_uuids()
-
             redacted_output = clean_text(raw, filters, uuid)
             
-            update_uuids(str(uuid), raw)
+            unredacted_file = TextFile(id=str(uuid),content=raw)
+            db.session.add(unredacted_file)
+            db.session.commit()
+
+            print(f"Added uuid {uuid} to database")
             
         else:
             flash("Please upload a valid .txt file.", "error")
@@ -61,15 +65,13 @@ def unredact():
         return redirect(url_for("views.home"))
 
     uuid = get_uuid(redacted_text)
-    uuids = get_uuids()
     try:
-        unredacted_output = uuids[uuid]
+        text = str(TextFile.query.get(uuid).content)
     except:
-        print(uuids.keys())
         print(uuid)
         unredacted_output = "Error: unable to find file"
 
-    return render_template("home.html", redacted_output=None, unredacted_output=unredacted_output)
+    return render_template("home.html", redacted_output=None, unredacted_output=text)
 
 
 @views.route("/download", methods=["POST"])
